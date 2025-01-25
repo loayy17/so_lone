@@ -8,11 +8,20 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include "libraries/Libft/libft.h"
+
+typedef struct s_point
+{
+    size_t x;
+    size_t y;
+}   t_point;
 typedef struct s_game 
 {
     char **map;
     size_t height;
     size_t width;
     size_t collectible;
+    t_point player;
+    t_point exit;
+    t_point *collectibles; 
 } t_game;
 #endif

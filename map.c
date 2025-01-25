@@ -4,14 +4,23 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
-
+void game_free(t_game *game,int *fd,int height)
+{
+    int index = 0;
+    while(index < height)
+    {
+        if (game->map[index])
+            free(game->map[index]);
+        index++;
+    }
+    free(game->map);
+    close(*fd);
+}
 int validate_name_map(char *str)
 {
     size_t len;
     len = strlen(str);
-    if(str[len - 4] == '.' && str[len - 3] == 'b' && str[len - 2] == 'e' && str[len - 1] == 'r')
-        return 1;
-    return 0;
+    return (len > 4 && ft_strncmp(str + len - 4, ".ber",4) == 0); 
 }
 
 void fill_map_row(char **map, char *line, size_t col)
@@ -31,14 +40,15 @@ void fill_map_row(char **map, char *line, size_t col)
 int validate_dimention(char **map, size_t *old_width, size_t *height)
 {
     size_t width = 0;
-    while(map[*height])
+    size_t height_2 = 0;
+    while(height_2 < *height)
     {
-        while(map[*height][width])
+        while(map[height_2][width])
             width++;
         if (width != *old_width)
             return(1);
         *old_width = width;     
-        (*height)++;    
+        height_2++;    
     }
     return 0;
 }
@@ -51,7 +61,6 @@ int validate_wall(char **map, size_t width, size_t height)
     {
         if(map[0][i] != '1' || map[height - 1][i] != '1')
             return 1;
-        ft_printf("i ==> %c\n",map[0][i]);
         i++;
     }
     while(j < height)
@@ -62,36 +71,111 @@ int validate_wall(char **map, size_t width, size_t height)
     } 
     return 0;       
 }
-
-int validate_elements(char **map, size_t *collectible)
+size_t calculate_collectibles(char **map)
+{
+    size_t i = 0;
+    size_t collectible = 0;
+    size_t j;
+    while(map[i] != NULL)
+    {
+        j = 0;
+        while(map[i][j] != '\0')
+        {
+            if(map[i][j] == 'C')
+                collectible++;
+            j++;   
+        } 
+        i++;
+    }
+    return collectible;
+}
+int validate_elements(t_game *game)
 {
     size_t exit = 0;
     size_t player = 0;
-    size_t i = 1;
-    size_t j = 1;
-
-    while(map[i])
+    size_t i = 0;
+    size_t j;
+    game->collectible = calculate_collectibles(game->map);
+    game->collectibles = malloc((game->collectible) * sizeof(t_point));
+    if (game->collectibles == NULL) {
+        return 1;
+    }
+    game->collectible = 0;
+    while(game->map[i] != NULL)
     {
-        while(map[i][j])
+        j = 0;
+        while(game->map[i][j]  != '\0')
         {
-            if(map[i][j] == 'C')
-                (*collectible)++;
-            else if(map[i][j] == 'P')
+            if(game->map[i][j] == 'C')
+            {
+                game->collectibles[game->collectible].x = j;
+                game->collectibles[game->collectible].y = i;
+                game->collectible++;
+            }
+            else if(game->map[i][j] == 'P')
+            {
+                game->player.x = j;
+                game->player.y = i;
                 player++;
-            else if(map[i][j] == 'E')
+            }
+            else if(game->map[i][j] == 'E')
+            {
+                game->exit.x = j;
+                game->exit.y = i;
                 exit++;
-            else if(map[i][j] == '0');
-            else if(map[i][j] == '1');
-            else return 1;
-            j++;    
+            }
+            else if (game->map[i][j] != '0' && game->map[i][j] != '1') {
+                free(game->collectibles);
+                return 1;
+            }
+            j++;   
         } 
         i++;
-        j = 0;
     }
-    if(player != 1 || exit != 1 || *collectible < 1)
+    game->collectibles = malloc((game->collectible) * sizeof(t_point));
+    if(player != 1 || exit != 1 || game->collectible < 1)
+    {
+        free(game->collectibles);
         return 1;
-    ft_printf("validate_dimention true");    
+    }
     return 0;   
+}
+void flood_fill(t_game *game, size_t x, size_t y, t_point *check) {
+    if (x >= game->width || y >= game->height || 
+        game->map[y][x] == '1' || game->map[y][x] == 'F') {
+        return;
+    }
+    char original = game->map[y][x];
+    game->map[y][x] = 'F';
+
+    if (original == 'C') {
+        check->x++;
+    } else if (original == 'E') {
+        check->y++;
+    }
+    flood_fill(game, x + 1, y, check);
+    flood_fill(game, x - 1, y, check);
+    flood_fill(game, x, y + 1, check);
+    flood_fill(game, x, y - 1, check);
+}
+
+int validate_solution(t_game *game) {
+    t_point check = {0, 0};
+    t_point c;
+    size_t i = 0;
+    flood_fill(game, game->player.x, game->player.y, &check);
+    game->map[game->exit.y][game->exit.x] = 'E';
+    game->map[game->player.y][game->player.x] = 'P';
+    while(i <= check.x) 
+    {
+        c = game->collectibles[i];
+        printf("x: %zu y: %zu\n",c.x,c.y);
+        game->map[c.y][c.x] = 'C';
+        i++;
+    }
+
+    free(game->collectibles);
+    return (check.x == game->collectible && check.y >= 1);
 }
 
 int main(int ac, char **av)
@@ -109,7 +193,10 @@ int main(int ac, char **av)
         return 1;
     fd = open(av[1], O_RDONLY);
     if(fd == -1)
+    {
+        close(fd);
         return 1;
+    }
     ft_bzero(&game, sizeof(t_game));    
     while((line = get_next_line(fd)))
     {
@@ -119,12 +206,12 @@ int main(int ac, char **av)
             continue;  
         }
         col++;
-        // ft_printf("NUMBER OF COL ==> %d",col);
         free(line);
     }
-    game.map = (char **)malloc((col + 1)  * sizeof(char *));
-    col = 0;
     close(fd);
+    game.map = (char **)malloc((col + 1)  * sizeof(char *));
+    game.height = col;
+    col = 0;
     fd = open(av[1], O_RDONLY);
     while((line = get_next_line(fd)))
     {
@@ -136,22 +223,27 @@ int main(int ac, char **av)
         fill_map_row(game.map, line, col++); 
         free(line);       
     }
+    game.map[col] = NULL; 
     game.width = ft_strlen(game.map[0]);
     if(validate_dimention(game.map, &game.width, &game.height) 
-            || validate_wall(game.map, game.width, game.height) || validate_elements(game.map, &game.collectible))
-            {
-            ft_printf("NOT valid MAp Fuck you \n");
+            || validate_wall(game.map, game.width, game.height) || validate_elements(&game) || validate_solution(&game))
+            {    
+                size_t i = 0;
+                while(i < game.height)
+                {
+                    ft_printf("%s\n",game.map[i]);
+                    i++;
+                }
+                game_free(&game, &fd,game.height);
               return 1;  
             }
-    int index = 0;
-    while(game.map[index])
+    size_t i = 0;
+    while(i < game.height)
     {
-        if (game.map[index])
-            free(game.map[index]);
-        index++;
+        ft_printf("%s\n",game.map[i]);
+        i++;
     }
-    free(game.map);
-    ft_printf("OMAR");
+    game_free(&game,&fd,game.height);
         return 0;
     // start_game();
 }

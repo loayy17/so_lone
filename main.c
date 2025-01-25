@@ -158,7 +158,7 @@ const char *g_nums[9] = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
 void load_assets(t_data *d) {
     d->wall = mlx_xpm_file_to_image(d->mlx, "images/wall.xpm", &d->width, &d->height);
     d->floor = mlx_xpm_file_to_image(d->mlx, "images/floor.xpm", &d->width, &d->height);
-    d->collect = mlx_xpm_file_to_image(d->mlx, "images/princess.xpm", &d->width, &d->height);
+    d->collect = mlx_xpm_file_to_image(d->mlx, "images/Princess.xpm", &d->width, &d->height);
 
     int dir = 0;
     while (dir < DIRECTIONS) {
