@@ -137,7 +137,6 @@ void try_move(t_data *d, int dx, int dy, enum e_direction dir) {
         // Handle collectibles
         if (map[d->y][d->x] == 'C') {
             map[d->y][d->x] = '0';
-            printf("Collected at (%d, %d)\n", d->x, d->y);
         }
     }
 }
