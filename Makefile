@@ -1,29 +1,33 @@
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -I. -g
+CFLAGS = -Wall -Wextra -Werror -Iincludes -Ilibraries/Libft
 NAME = so_long
-RM = rm -f
-LIBFTPATH = ./libraries/Libft
-LIBFTAR = $(LIBFTPATH)/libft.a
-SRCS = map.c
+SRCS = src/main.c \
+		src/map_validation.c \
+		src/game_init.c \
+		src/rendering.c \
+		src/input_handling.c \
+		src/path_validation.c \
+		src/memory_management.c
 OBJS = $(SRCS:.c=.o)
-MLXFLAGS = -lmlx -lXext -lX11
+LIBFT = libraries/Libft/libft.a
+MLX = -lmlx -lXext -lX11
 
-all: $(LIBFTAR) $(NAME)
+all: $(LIBFT) $(NAME)
 
-$(LIBFTAR):
-	$(MAKE) -C $(LIBFTPATH)
+$(LIBFT):
+	@make -C libraries/Libft
 
-$(NAME): $(LIBFTAR) $(OBJS)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LIBFTAR) $(MLXFLAGS)
+$(NAME): $(OBJS)
+	@$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(MLX) -o $(NAME)
 
 clean:
-	$(RM) $(OBJS)
-	$(MAKE) -C $(LIBFTPATH) clean
+	@rm -f $(OBJS)
+	@make -C libraries/Libft clean
 
 fclean: clean
-	$(RM) $(NAME)
-	$(MAKE) -C $(LIBFTPATH) fclean
+	@rm -f $(NAME)
+	@make -C libraries/Libft fclean
 
 re: fclean all
 
-.PHONY: all clean fclean re libft
+.PHONY: all clean fclean re
