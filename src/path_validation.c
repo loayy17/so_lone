@@ -63,7 +63,7 @@ int	validate_solution(t_game *g)
 {
 	t_point	check;
 
-	check = (t_point){0, 0};
+	ft_bzero(&check,sizeof(t_point));
 	flood_fill(g, g->player.x, g->player.y, &check);
 	restore_map(g);
 	return (check.x != g->collectible || check.y < 1);
