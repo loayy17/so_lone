@@ -11,10 +11,7 @@ static void	draw_tile(t_game *g, size_t i, size_t j)
 	else if (g->map[i][j] == 'E')
 		img = g->exit_img;
 	else if (g->map[i][j] == 'P')
-	{
-		ft_printf("Player: %u, %u\n", i, j);
 		img = g->player_img;
-	}
 	else if(g->map[i][j] == '0')
 		img = g->floor_img;
 	else
