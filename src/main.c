@@ -37,5 +37,6 @@ int	main(int ac, char **av)
 		|| validate_solution(&g))
 		exit_err("Invalid map configuration", &g, NULL);
 	start_game(&g);
+	game_free(&g, NULL, g.height);
 	return (0);
 }

@@ -14,6 +14,13 @@
 # define KEY_Q 113
 # define TILE_SIZE 64
 
+
+#define WALL_IMAGE "images/wall/wall.xpm"
+#define FLOOR_IMAGE "images/wall/floor.xpm"
+#define PLAYER_IMAGE "images/player/down/down_1.xpm"
+#define EXIT_IMAGE "images/exit/exit_open.xpm"
+#define COLLECTIBLE_IMAGE "images/colectible/burger_2.xpm"
+
 typedef struct s_point {
 	size_t	x;
 	size_t	y;
@@ -27,6 +34,7 @@ typedef struct s_game {
 	size_t		width;
 	size_t		collectible;
 	t_point		player;
+	int			player_on_exit;
 	t_point		exit;
 	t_point		*collectibles;
 	void		*wall_img;

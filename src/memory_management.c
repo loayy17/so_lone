@@ -14,33 +14,49 @@ void	destroy_images(t_game *g)
 		mlx_destroy_image(g->mlx, g->floor_img);
 }
 
-void	game_free(t_game *g, int *fd, int h)
+void game_free(t_game *g, int *fd, int h)
 {
-	int	i;
+    int i;
 
-	i = -1;
-	if (g->map)
-	{
-		while (++i < h)
-			free(g->map[i]);
-		free(g->map);
-	}
-	if (g->collectibles)
-		free(g->collectibles);
-	if (fd)
-		close(*fd);
-	if (g->mlx)
-	{
-		destroy_images(g);
-		if (g->win)
-			mlx_destroy_window(g->mlx, g->win);
-		mlx_destroy_display(g->mlx);
-		free(g->mlx);
-	}
+    if (g->collectibles)
+    {
+        free(g->collectibles);
+        g->collectibles = NULL; // Set pointer to NULL after freeing
+    }
+
+    i = -1;
+    if (g->map)
+    {
+        while (++i < h)
+        {
+            if (g->map[i])
+            {
+                free(g->map[i]);
+                g->map[i] = NULL; // Set pointer to NULL after freeing
+            }
+        }
+        free(g->map);
+        g->map = NULL; // Set pointer to NULL after freeing
+    }
+
+    if (fd)
+    {
+        close(*fd);
+        fd = NULL; // Set pointer to NULL after closing
+    }
+
+    if (g->mlx)
+    {
+        destroy_images(g);
+        mlx_destroy_window(g->mlx, g->win);
+        mlx_destroy_display(g->mlx);
+        free(g->mlx);
+        g->mlx = NULL;
+    }
 }
-
 void	exit_err(char *msg, t_game *g, int *fd)
 {
+
 	ft_putstr_fd(msg, 2);
 	ft_putstr_fd("\n", 2);
 	if (g)

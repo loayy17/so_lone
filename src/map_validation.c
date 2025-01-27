@@ -49,7 +49,9 @@ static int	process_cell(t_game *g, size_t i, size_t j, size_t *c)
 		g->collectibles[g->collectible++].y = i;
 	}
 	else if (ch == 'P' && ++c[1])
-		g->player = (t_point){j, i};
+	{
+	g->player = (t_point){j, i};
+	}
 	else if (ch == 'E' && ++c[0])
 		g->exit = (t_point){j, i};
 	else if (!ft_strchr("01", ch))

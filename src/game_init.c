@@ -45,19 +45,19 @@ void	load_images(t_game *g)
 	int	ts;
 
 	ts = TILE_SIZE;
-	g->wall_img = mlx_xpm_file_to_image(g->mlx, "textures/wall.xpm", &ts, &ts);
+	g->wall_img = mlx_xpm_file_to_image(g->mlx, WALL_IMAGE, &ts, &ts);
 	if (!g->wall_img)
 		exit_err("Failed to load wall image", g, NULL);
-	g->floor_img = mlx_xpm_file_to_image(g->mlx, "textures/floor.xpm", &ts, &ts);
+	g->floor_img = mlx_xpm_file_to_image(g->mlx, FLOOR_IMAGE, &ts, &ts);
 	if (!g->floor_img)
 		exit_err("Failed to load floor image", g, NULL);
-	g->player_img = mlx_xpm_file_to_image(g->mlx, "textures/player.xpm", &ts, &ts);
+	g->player_img = mlx_xpm_file_to_image(g->mlx, PLAYER_IMAGE, &ts, &ts);
 	if (!g->player_img)
 		exit_err("Failed to load player image", g, NULL);
-	g->exit_img = mlx_xpm_file_to_image(g->mlx, "textures/exit.xpm", &ts, &ts);
+	g->exit_img = mlx_xpm_file_to_image(g->mlx, EXIT_IMAGE, &ts, &ts);
 	if (!g->exit_img)
 		exit_err("Failed to load exit image", g, NULL);
-	g->collectible_img = mlx_xpm_file_to_image(g->mlx, "textures/collect.xpm", &ts, &ts);
+	g->collectible_img = mlx_xpm_file_to_image(g->mlx, COLLECTIBLE_IMAGE, &ts, &ts);
 	if (!g->collectible_img)
 		exit_err("Failed to load collectible image", g, NULL);
 }

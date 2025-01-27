@@ -34,6 +34,7 @@ void	restore_map(t_game *g)
 				g->map[i][j] = '0';
 	}
 	g->map[g->exit.y][g->exit.x] = 'E';
+	g->map[g->player.y][g->player.x] = 'P';
 	k = -1;
 	while (++k < g->collectible)
 		g->map[g->collectibles[k].y][g->collectibles[k].x] = 'C';
