@@ -62,7 +62,7 @@ size_t	calculate_collectibles(char **map)
 int	validate_solution(t_game *g)
 {
 	t_point	check;
-
+	
 	ft_bzero(&check,sizeof(t_point));
 	flood_fill(g, g->player.x, g->player.y, &check);
 	restore_map(g);
