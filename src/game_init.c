@@ -51,7 +51,7 @@ void	load_images(t_game *g)
 	g->floor_img = mlx_xpm_file_to_image(g->mlx, FLOOR_IMAGE, &ts, &ts);
 	if (!g->floor_img)
 		exit_err("Failed to load floor image", g, NULL);
-	g->player_img = mlx_xpm_file_to_image(g->mlx, PLAYER_IMAGE, &ts, &ts);
+	g->player_img = mlx_xpm_file_to_image(g->mlx, PLAYER_IMAGE_DOWN, &ts, &ts);
 	if (!g->player_img)
 		exit_err("Failed to load player image", g, NULL);
 	g->exit_img = mlx_xpm_file_to_image(g->mlx, EXIT_IMAGE_CLOSE, &ts, &ts);
@@ -60,19 +60,6 @@ void	load_images(t_game *g)
 	g->collectible_img = mlx_xpm_file_to_image(g->mlx, COLLECTIBLE_IMAGE, &ts, &ts);
 	if (!g->collectible_img)
 		exit_err("Failed to load collectible image", g, NULL);
-}
-
-int resize_window(void *param)
-{
-    t_game *g = (t_game *)param;
-    int w, h;
-	int ts = TILE_SIZE * TILE_SCALE;
-    mlx_get_screen_size(g->mlx, &w, &h);
-    g->width = w * ts;
-    g->height = h * ts;
-    mlx_clear_window(g->mlx, g->win);
-    draw_map(g);
-    return (0);
 }
 
 void	start_game(t_game *g)
@@ -86,9 +73,8 @@ void	start_game(t_game *g)
 		exit_err("Window creation failed", g, NULL);
 	load_images(g);
 	draw_map(g);
-	mlx_mouse_hide(g->mlx, g->win);
 	mlx_hook(g->win,DESTROY_WINDOW, EXIT_SUCCESS, close_window, g);
-	// mlx_hook(g->win,ResizeRequest, ResizeRedirectMask, resize_window, g);
 	mlx_hook(g->win,PRESS,RELEASE, handle_input, g);
+	mlx_loop_hook(g->mlx, ft_animation_player, g);
 	mlx_loop(g->mlx);
 }

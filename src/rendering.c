@@ -34,5 +34,5 @@ void	draw_map(t_game *g)
 			j++;
 		}
 		i++;	
-	}
+	}  
 }
