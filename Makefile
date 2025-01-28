@@ -2,12 +2,14 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror -Iincludes -Ilibraries/Libft
 NAME = so_long
 SRCS = src/main.c \
-		src/map_validation.c \
 		src/game_init.c \
-		src/rendering.c \
 		src/input_handling.c \
+		src/map_validation.c \
+		src/memory_management.c \
 		src/path_validation.c \
-		src/memory_management.c
+		src/rendering.c \
+		src/draw_player_directions.c
+		
 OBJS = $(SRCS:.c=.o)
 LIBFT = libraries/Libft/libft.a
 MLX = -lmlx -lXext -lX11
@@ -15,18 +17,18 @@ MLX = -lmlx -lXext -lX11
 all: $(LIBFT) $(NAME)
 
 $(LIBFT):
-	@make -C libraries/Libft
+	make -C libraries/Libft -s
 
 $(NAME): $(OBJS)
-	@$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(MLX) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(MLX) -o $(NAME)
 
 clean:
-	@rm -f $(OBJS)
-	@make -C libraries/Libft clean
+	rm -f $(OBJS)
+	make -C libraries/Libft clean -s
 
 fclean: clean
-	@rm -f $(NAME)
-	@make -C libraries/Libft fclean
+	rm -f $(NAME)
+	make -C libraries/Libft fclean -s
 
 re: fclean all
 

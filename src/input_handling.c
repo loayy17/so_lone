@@ -1,50 +1,36 @@
 #include "so_long.h"
 #include "anim_path.h"
-#define ANIMATION_FRAMES 5
-#define ANIMATION_DELAY 500
 
 void ft_draw_player(t_game *g, int dir, int frame)
 {
     int width, height;
     char *player_images[ANIMATION_FRAMES];
 
-    if (dir == 0)
-    {
-        player_images[0] = P_UP_0;
-        player_images[1] = P_UP_1;
-        player_images[2] = P_UP_2;
-        player_images[3] = P_UP_3;
-        player_images[4] = P_UP_4;
-    }
-    else if (dir == 1)
-    {
-        player_images[0] = P_DOWN_0;
-        player_images[1] = P_DOWN_1;
-        player_images[2] = P_DOWN_2;
-        player_images[3] = P_DOWN_3;
-        player_images[4] = P_DOWN_4;
-    }
-    else if (dir == 2)
-    {
-        player_images[0] = P_LEFT_0;
-        player_images[1] = P_LEFT_1;
-        player_images[2] = P_LEFT_2;
-        player_images[3] = P_LEFT_3;
-        player_images[4] = P_LEFT_4;
-    }
-    else if (dir == 3)
-    {
-        player_images[0] = P_RIGHT_0;
-        player_images[1] = P_RIGHT_1;
-        player_images[2] = P_RIGHT_2;
-        player_images[3] = P_RIGHT_3;
-        player_images[4] = P_RIGHT_4;
-    }
-
+    set_player_images(player_images, dir);
+    if (g->player_img)
+        mlx_destroy_image(g->mlx, g->player_img);
     g->player_img = mlx_xpm_file_to_image(g->mlx, player_images[frame], &width, &height);
     if (g->player_img == NULL)
         exit_err("Error\nPlayer image not found\n", g, NULL);
     mlx_put_image_to_window(g->mlx, g->win, g->player_img, g->player.x * 50, g->player.y * 50);
+}
+
+void set_player_images(char *player_images[], int dir)
+{
+    if (dir == 0) 
+        ft_draw_player_up(player_images);
+    else if (dir == 1)
+    {
+        ft_draw_player_down(player_images);
+    }
+    else if (dir == 2)
+    {
+        ft_draw_player_left(player_images);
+    }
+    else if (dir == 3)
+    {
+        ft_draw_player_right(player_images);
+    }
 }
 
 int ft_animation_player(t_game *g)
@@ -54,6 +40,7 @@ int ft_animation_player(t_game *g)
     usleep(ANIMATION_DELAY * 100);
     return (0);
 }
+
 void ft_put_background(t_game *g,int width)
 {
     int i = 10;
@@ -69,6 +56,7 @@ void ft_put_background(t_game *g,int width)
         i++;
     }
 }
+
 void ft_put_steps(t_game *g,size_t steps)
 {
     int width;
@@ -96,10 +84,46 @@ void ft_put_steps(t_game *g,size_t steps)
     free(steps_counter);
     free(message);
 }
+
+void ft_win_game(t_game *g)
+{
+    
+    ft_printf("\033[1;36m");
+    ft_printf("**************************************************************\n");
+    ft_printf("**************************************************************\n");
+    ft_printf("**************************************************************\n");
+    ft_printf("*******              شغل نظيف نظيف                     *******\n");
+    ft_printf("*******                                                *******\n");
+    ft_printf("*******              مرفوضة مرفوضة                     *******\n");
+    ft_printf("*******                                                *******\n");
+    ft_printf("*******           \033[1;33mYOU WIN\033[1;36m                              *******\n");
+    ft_printf("*******           \033[1;33mGO TO SLEEP\033[1;36m                          *******\n");
+    ft_printf("*******                                                *******\n");
+    ft_printf("*******      \033[0;36mcreated by lalhindi\033[1;36m                       *******\n");
+    ft_printf("*******                                                *******\n");
+    ft_printf("**************************************************************\n");
+    ft_printf("**************************************************************\n");
+    ft_printf("**************************************************************\n");
+    ft_printf("\033[0m");
+    close_window(g);
+}
+
+void ft_show_exit_open(t_game *g)
+{
+    int width;
+    int height;
+    
+    mlx_destroy_image(g->mlx, g->exit_img);
+    g->exit_img = mlx_xpm_file_to_image(g->mlx, EXIT_IMAGE_OPEN, &width, &height);
+    if (g->exit_img == NULL)
+        exit_err("Error\nExit image not found\n", g,NULL);
+    mlx_put_image_to_window(g->mlx, g->win, g->exit_img, g->exit.x * 50, g->exit.y * 50);
+}
+
 void ft_move_player(t_game *g, int x, int y)
 {
     char next_pos;
-    int width, height;
+
     next_pos = g->map[g->player.y + y][g->player.x + x];
     if (next_pos == '1')
         return;
@@ -107,14 +131,10 @@ void ft_move_player(t_game *g, int x, int y)
         g->collectible--;
     if(g->collectible == 0)
     {
-        mlx_destroy_image(g->mlx, g->exit_img);
-        g->exit_img = mlx_xpm_file_to_image(g->mlx, EXIT_IMAGE_OPEN, &width, &height);
-        if (g->exit_img == NULL)
-            exit_err("Error\nExit image not found\n", g,NULL);
-        mlx_put_image_to_window(g->mlx, g->win, g->exit_img, g->exit.x * 50, g->exit.y * 50);
+        ft_show_exit_open(g);
     }    
     if (next_pos == 'E' && g->collectible == 0)
-        close_window(g);
+        ft_win_game(g);
     g->map[g->player.y][g->player.x] = '0';
     ft_animation_player(g);
     g->player.x += x;
@@ -123,7 +143,6 @@ void ft_move_player(t_game *g, int x, int y)
     if(!(g->player.y == g->exit.y) || !(g->player.x == g->exit.x))
         g->map[g->exit.y][g->exit.x] = 'E';
     draw_map(g);
-    ft_put_steps(g, ++g->steps);  
 }
 
 int handle_input(int key, t_game *g)

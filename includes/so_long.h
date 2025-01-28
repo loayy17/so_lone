@@ -5,21 +5,13 @@
 # include <fcntl.h>
 # include <mlx.h>
 # include "libft.h"
-# include <./X11/X.h>
-
-# define PRESS 2
-# define RELEASE 3 
-# define TILE_SIZE 50
-# define DESTROY_WINDOW 17
-#define WALL_IMAGE "images/wall/wall.xpm"
-#define FLOOR_IMAGE "images/wall/lava.xpm"
-#define PLAYER_IMAGE_DOWN "images/fireboy/down/down_2.xpm"
-#define PLAYER_IMAGE_UP "images/fireboy/up/up_1.xpm"
-#define PLAYER_IMAGE_LEFT "images/fireboy/left/left_1.xpm"
-#define PLAYER_IMAGE_RIGHT "images/fireboy/right/right_1.xpm"
-#define EXIT_IMAGE_OPEN "images/exit/exit_open.xpm"
-#define EXIT_IMAGE_CLOSE "images/exit/exit_close.xpm"
-#define COLLECTIBLE_IMAGE "images/colectible/jewel.xpm"
+# include "anim_path.h"
+#define ANIMATION_FRAMES 5
+#define ANIMATION_DELAY 1000
+#define PRESS 2
+#define RELEASE 3 
+#define TILE_SIZE 50
+#define DESTROY_WINDOW 17
 
 typedef struct s_point {
 	size_t	x;
@@ -55,7 +47,6 @@ typedef struct s_game {
 	void		*mlx;
 	void		*win;
 	char		**map;
-	void *fire_sheet;
     int frame;
     int frame_count;
 	size_t		height;
@@ -93,4 +84,10 @@ void	restore_map(t_game *g);
 size_t	calculate_collectibles(char **map);
 int	ft_animation_player(t_game *g);
 void	ft_put_steps(t_game *g, size_t steps);
+void ft_draw_player(t_game *g, int dir, int frame);
+void set_player_images(char *player_images[], int dir);
+void ft_draw_player_right(char *player_images[]);
+void ft_draw_player_left(char *player_images[]);
+void ft_draw_player_down(char *player_images[]);
+void ft_draw_player_up(char *player_images[]);
 #endif

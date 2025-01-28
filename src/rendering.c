@@ -34,5 +34,6 @@ void	draw_map(t_game *g)
 			j++;
 		}
 		i++;	
-	}  
+	} 
+	ft_put_steps(g, ++g->steps);  
 }

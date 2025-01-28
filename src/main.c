@@ -16,6 +16,7 @@ static int	count_lines(int fd)
 	}
 	return (count);
 }
+
 int	main(int ac, char **av)
 {
 	t_game	g;

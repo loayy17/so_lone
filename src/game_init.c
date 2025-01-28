@@ -51,7 +51,7 @@ void	load_images(t_game *g)
 	g->floor_img = mlx_xpm_file_to_image(g->mlx, FLOOR_IMAGE, &ts, &ts);
 	if (!g->floor_img)
 		exit_err("Failed to load floor image", g, NULL);
-	g->player_img = mlx_xpm_file_to_image(g->mlx, PLAYER_IMAGE_DOWN, &ts, &ts);
+	g->player_img = mlx_xpm_file_to_image(g->mlx, P_DOWN_0, &ts, &ts);
 	if (!g->player_img)
 		exit_err("Failed to load player image", g, NULL);
 	g->exit_img = mlx_xpm_file_to_image(g->mlx, EXIT_IMAGE_CLOSE, &ts, &ts);
