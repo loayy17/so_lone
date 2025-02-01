@@ -1,14 +1,15 @@
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -Iincludes -Ilibraries/Libft
 NAME = so_long
-SRCS = src/main.c \
+SRCS = 	src/draw_player_directions.c \
 		src/game_init.c \
 		src/input_handling.c \
+		src/main.c \
 		src/map_validation.c \
 		src/memory_management.c \
+		src/monster.c \
 		src/path_validation.c \
 		src/rendering.c \
-		src/draw_player_directions.c
 		
 OBJS = $(SRCS:.c=.o)
 LIBFT = libraries/Libft/libft.a
