@@ -12,30 +12,6 @@
 
 #include "so_long.h"
 
-int	validate_name_map(char *str)
-{
-	size_t	len;
-
-	len = ft_strlen(str);
-	return (len > 4 && !ft_strncmp(str + len - 4, ".ber", 4));
-}
-
-int	validate_dimension(char **map, size_t *w, size_t *h)
-{
-	size_t	width;
-	size_t	i;
-
-	i = 0;
-	while (i < *h)
-	{
-		width = ft_strlen(map[i]);
-		if (i++ > 0 && width != *w)
-			return (1);
-		*w = width;
-	}
-	return (0);
-}
-
 int	validate_wall(char **map, size_t w, size_t h)
 {
 	size_t	i;
@@ -78,7 +54,7 @@ static int	process_cell(t_game *g, size_t i, size_t j, size_t *c)
 	return (0);
 }
 
-static int	init_entities(t_game *g, size_t *c)
+static int	init_entities(t_game *g)
 {
 	g->collectible = count_entities(g->map, 'C', g->height, g->width);
 	g->monster_counter = count_entities(g->map, 'M', g->height, g->width);
@@ -86,44 +62,49 @@ static int	init_entities(t_game *g, size_t *c)
 	g->monsters = malloc(g->monster_counter * sizeof(t_element));
 	if (!g->collectibles || !g->monsters)
 	{
-		free(g->collectibles);
-		free(g->monsters);
+		if (g->collectibles)
+			free(g->collectibles);
+		if (g->monsters)
+			free(g->monsters);
 		return (1);
 	}
 	g->collectible = 0;
 	g->monster_counter = 0;
-	ft_bzero(c, sizeof(size_t) * 2);
 	return (0);
 }
 
-static int	validate_map_elements(t_game *g, size_t *c)
+int	validate_map_elements(t_game *g, size_t *c)
 {
 	size_t	i;
 	size_t	j;
 
-	i = -1;
-	while (g->map[++i])
+	i = 0;
+	while (g->map[i])
 	{
-		j = -1;
-		while (g->map[i][++j])
+		j = 0;
+		while (g->map[i][j])
 		{
 			if (process_cell(g, i, j, c))
 				return (1);
+			j++;
 		}
+		i++;
 	}
 	return (0);
 }
 
 int	validate_elements(t_game *g)
 {
-	size_t c[2];
+	size_t	c[2];
 
-	if (init_entities(g, c))
+	c[0] = 0;
+	c[1] = 0;
+	if (init_entities(g))
 		exit_err("Malloc failed", g, NULL);
 	if (validate_map_elements(g, c))
 		exit_err("Invalid map element", g, NULL);
 	if (c[1] == 1 && c[0] == 1 && g->collectible > 1)
 		return (0);
-	exit_err("Invalid map configuration", g, NULL);
+	exit_err("Invalid map configuration elements", g, NULL);
 	return (1);
 }

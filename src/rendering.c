@@ -38,8 +38,8 @@ void	draw_tile(t_game *g, size_t i, size_t j)
 
 void	draw_map(t_game *g)
 {
-	size_t i;
-	size_t j;
+	size_t	i;
+	size_t	j;
 
 	i = -1;
 	while (++i < g->height)

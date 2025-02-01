@@ -97,23 +97,3 @@ void	move_monsters(t_game *g)
 		i++;
 	}
 }
-
-void	render_monsters(t_game *g)
-{
-	int ts;
-	size_t i;
-
-	if (++g->monster_speed < MOVE_SPEED / g->monster_counter)
-		return ;
-	g->monster_speed = 0;
-	g->anim_frame = (g->anim_frame + 1) % ANIM_FRAMES;
-	ts = TILE_SIZE;
-	i = 0;
-	while (i < g->monster_counter)
-	{
-		mlx_put_image_to_window(g->mlx, g->win,
-			g->monster_img[g->monsters[i].dir][g->anim_frame], g->monsters[i].x
-			* ts, g->monsters[i].y * ts);
-		i++;
-	}
-}

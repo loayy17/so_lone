@@ -12,71 +12,23 @@
 
 #include "so_long.h"
 
-static void	load_player_dir_anim(t_game *g, int ts, int dir)
+void	flood_fill(t_game *g, size_t x, size_t y, t_point *check)
 {
-	char	*paths[ANIM_FRAMES];
-	int		i;
+	char	original;
 
-	if (dir == 0)
-		ft_draw_player_up(paths);
-	else if (dir == 1)
-		ft_draw_player_down(paths);
-	else if (dir == 2)
-		ft_draw_player_left(paths);
-	else if (dir == 3)
-		ft_draw_player_right(paths);
-	i = 0;
-	while (i < ANIM_FRAMES)
-	{
-		g->player_img[dir][i] = mlx_xpm_file_to_image(g->mlx, paths[i], &ts,
-				&ts);
-		if (!g->player_img[dir][i])
-			exit_err("Player animation load failed", g, NULL);
-		i++;
-	}
-}
-
-void	load_player_anim(t_game *g)
-{
-	const int	ts = TILE_SIZE;
-	int			dir;
-
-	dir = 0;
-	while (dir < 4)
-	{
-		load_player_dir_anim(g, ts, dir);
-		dir++;
-	}
-}
-
-static void	load_exit_status_anim(t_game *g, int ts, int status)
-{
-	char	*paths[ANIM_FRAMES];
-	int		i;
-
-	i = 0;
-	ft_draw_exit(paths, status);
-	while (i < ANIM_FRAMES)
-	{
-		g->exit_img[status][i] = mlx_xpm_file_to_image(g->mlx, paths[i], &ts,
-				&ts);
-		if (!g->exit_img[status][i])
-			exit_err("Player animation load failed", g, NULL);
-		i++;
-	}
-}
-
-void	load_exit_anim(t_game *g)
-{
-	const int	ts = TILE_SIZE;
-	int			status;
-
-	status = 0;
-	while (status < 2)
-	{
-		load_exit_status_anim(g, ts, status);
-		status++;
-	}
+	if (x >= g->width || y >= g->height || g->map[y][x] == '1'
+		|| g->map[y][x] == 'F')
+		return ;
+	original = g->map[y][x];
+	g->map[y][x] = 'F';
+	if (original == 'C')
+		check->x++;
+	else if (original == 'E')
+		check->y++;
+	flood_fill(g, x + 1, y, check);
+	flood_fill(g, x - 1, y, check);
+	flood_fill(g, x, y + 1, check);
+	flood_fill(g, x, y - 1, check);
 }
 
 void	fill_map_row(char **map, char *line, size_t row)
@@ -106,12 +58,17 @@ int	read_map(char *file, char **map, int lines)
 	while (i < lines)
 	{
 		line = get_next_line(fd);
-		if (!line)
-			break ;
+		if (!line || *line == '\0')
+		{
+			free(line);
+			close(fd);
+			return (0);
+		}
 		fill_map_row(map, line, i++);
 		free(line);
 	}
 	close(fd);
+	map[i] = NULL;
 	return (i == lines);
 }
 

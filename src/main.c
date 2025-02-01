@@ -12,6 +12,30 @@
 
 #include "so_long.h"
 
+int	validate_name_map(char *str)
+{
+	size_t	len;
+
+	len = ft_strlen(str);
+	return (len > 4 && !ft_strncmp(str + len - 4, ".ber", 4));
+}
+
+int	validate_dimension(char **map, size_t *w, size_t *h)
+{
+	size_t	width;
+	size_t	i;
+
+	i = 0;
+	while (i < *h)
+	{
+		width = ft_strlen(map[i]);
+		if (i++ > 0 && width != *w)
+			return (1);
+		*w = width;
+	}
+	return (0);
+}
+
 static int	count_lines(int fd)
 {
 	char	*line;
@@ -24,7 +48,10 @@ static int	count_lines(int fd)
 		if (!line)
 			break ;
 		if (line[0] == '\n')
+		{
+			free(line);
 			exit_err("Error\nMap has empty lines\n", NULL, &fd);
+		}
 		++count;
 		free(line);
 	}

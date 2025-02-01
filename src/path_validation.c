@@ -10,27 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "so_long.h"
-
-void	flood_fill(t_game *g, size_t x, size_t y, t_point *check)
-{
-	char	original;
-
-	if (x >= g->width || y >= g->height || g->map[y][x] == '1'
-		|| g->map[y][x] == 'F')
-		return ;
-	original = g->map[y][x];
-	g->map[y][x] = 'F';
-	if (original == 'C')
-		check->x++;
-	else if (original == 'E')
-		check->y++;
-	flood_fill(g, x + 1, y, check);
-	flood_fill(g, x - 1, y, check);
-	flood_fill(g, x, y + 1, check);
-	flood_fill(g, x, y - 1, check);
-}
 
 static void	restore_map_elements(t_game *g)
 {
@@ -74,28 +54,9 @@ void	restore_map(t_game *g)
 	restore_monsters(g);
 }
 
-size_t	count_entities(char **map, char c, size_t h, size_t w)
-{
-	size_t	i;
-	size_t	j;
-	size_t	count;
-
-	i = 0;
-	count = 0;
-	while (i < h)
-	{
-		j = 0;
-		while (j < w)
-			if (map[i][j++] == c)
-				count++;
-		i++;
-	}
-	return (count);
-}
-
 int	validate_solution(t_game *g)
 {
-	t_point check;
+	t_point	check;
 
 	ft_bzero(&check, sizeof(t_point));
 	flood_fill(g, g->player.x, g->player.y, &check);
